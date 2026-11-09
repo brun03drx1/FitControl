@@ -1,0 +1,194 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}Gestão de alunos | FitControl{% endblock %}
+
+{% block heading %}Gestão de alunos{% endblock %}
+
+{% block content %}
+
+<!-- LISTAGEM E GERENCIAMENTO DE ALUNOS -->
+<div class="panel">
+
+    <!-- CABEÇALHO DA LISTAGEM -->
+    <div class="topbar">
+
+        <div>
+            <h2>Alunos cadastrados</h2>
+            <p>Consulte, edite e gerencie as matrículas.</p>
+        </div>
+
+        <a
+            class="button"
+            href="{% url 'cadastrar_aluno' %}"
+        >
+            + Novo aluno
+        </a>
+
+    </div>
+
+    <!-- FORMULÁRIO DE FILTROS -->
+    <form method="get" class="filters-form">
+
+        <div class="filter-search">
+
+            <label for="id_q">Pesquisar aluno</label>
+
+            <input
+                type="text"
+                id="id_q"
+                name="q"
+                value="{{ pesquisa }}"
+                placeholder="Digite o nome ou a matrícula"
+            >
+
+        </div>
+
+        <div class="filter-status">
+
+            <label for="id_situacao">Situação</label>
+
+            <select id="id_situacao" name="situacao">
+
+                <option
+                    value="todos"
+                    {% if situacao == "todos" %}selected{% endif %}
+                >
+                    Todos os alunos
+                </option>
+
+                <option
+                    value="ativos"
+                    {% if situacao == "ativos" %}selected{% endif %}
+                >
+                    Ativos e em dia
+                </option>
+
+                <option
+                    value="bloqueados"
+                    {% if situacao == "bloqueados" %}selected{% endif %}
+                >
+                    Bloqueados
+                </option>
+
+                <option
+                    value="vencidos"
+                    {% if situacao == "vencidos" %}selected{% endif %}
+                >
+                    Matrículas vencidas
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="filter-actions">
+
+            <button type="submit" class="button">
+                Filtrar
+            </button>
+
+            <a
+                href="{% url 'listar_alunos' %}"
+                class="button button-secondary"
+            >
+                Limpar
+            </a>
+
+        </div>
+
+    </form>
+
+    <!-- TABELA DE ALUNOS -->
+    <table>
+
+        <thead>
+            <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Validade</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for aluno in alunos %}
+                <tr>
+
+                    <td>{{ aluno.matricula }}</td>
+
+                    <td>{{ aluno.nome }}</td>
+
+                    <td>
+                        {{ aluno.telefone|default:"Não informado" }}
+                    </td>
+
+                    <td>
+                        {{ aluno.validade|date:"d/m/Y" }}
+                    </td>
+
+                    <td>
+                        {% if aluno.ativo %}
+                            <span class="status status-ok">
+                                Ativo
+                            </span>
+                        {% else %}
+                            <span class="status status-error">
+                                Inativo
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <div class="actions">
+
+                            <a
+                                class="button button-secondary"
+                                href="{% url 'editar_aluno' aluno.id %}"
+                            >
+                                Editar
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'alternar_status_aluno' aluno.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    class="button {% if aluno.ativo %}button-danger{% else %}button-secondary{% endif %}"
+                                    type="submit"
+                                >
+                                    {% if aluno.ativo %}
+                                        Bloquear
+                                    {% else %}
+                                        Reativar
+                                    {% endif %}
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            {% empty %}
+                <tr>
+                    <td colspan="6">
+                        Nenhum aluno cadastrado até o momento.
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

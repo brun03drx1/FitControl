@@ -1,0 +1,76 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}{{ titulo }} | FitControl{% endblock %}
+
+{% block heading %}{{ titulo }}{% endblock %}
+
+{% block content %}
+
+<!-- FORMULÁRIO DE CADASTRO E EDIÇÃO DE ALUNOS -->
+<div class="panel">
+
+    <h2>Dados do aluno</h2>
+
+    <p class="muted">
+        Preencha os campos abaixo e salve para registrar as alterações.
+    </p>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <!-- ERROS GERAIS DO FORMULÁRIO -->
+        {% if form.non_field_errors %}
+            <div class="status status-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- CAMPOS DO FORMULÁRIO -->
+        {% for field in form %}
+
+            <div>
+
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+
+                {{ field }}
+
+                {% if field.help_text %}
+                    <p class="muted">
+                        {{ field.help_text }}
+                    </p>
+                {% endif %}
+
+                {% for error in field.errors %}
+                    <p style="color: #f87171;">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+        <!-- BOTÕES DE AÇÃO -->
+        <div class="actions" style="margin-top: 25px;">
+
+            <button class="button" type="submit">
+                Salvar aluno
+            </button>
+
+            <a
+                class="button button-secondary"
+                href="{% url 'listar_alunos' %}"
+            >
+                Cancelar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

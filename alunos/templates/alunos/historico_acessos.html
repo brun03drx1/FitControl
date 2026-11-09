@@ -1,0 +1,187 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}Histórico de acessos | FitControl{% endblock %}
+
+{% block heading %}Histórico de acessos{% endblock %}
+
+{% block content %}
+
+<!-- HISTÓRICO DE TENTATIVAS DE ACESSO -->
+<div class="panel">
+
+    <h2>Tentativas na catraca</h2>
+
+    <p class="muted">
+        Consulte entradas liberadas e bloqueadas registradas pelo sistema.
+    </p>
+
+    <!-- FORMULÁRIO DE FILTROS -->
+    <form method="get" class="filters-form">
+
+        <div class="filter-search">
+
+            <label for="id_matricula">Matrícula</label>
+
+            <input
+                type="text"
+                id="id_matricula"
+                name="matricula"
+                value="{{ matricula }}"
+                placeholder="Digite a matrícula"
+            >
+
+        </div>
+
+        <div class="filter-status">
+
+            <label for="id_resultado">Resultado</label>
+
+            <select id="id_resultado" name="resultado">
+
+                <option
+                    value="todos"
+                    {% if resultado == "todos" %}selected{% endif %}
+                >
+                    Todos
+                </option>
+
+                <option
+                    value="liberado"
+                    {% if resultado == "liberado" %}selected{% endif %}
+                >
+                    Liberados
+                </option>
+
+                <option
+                    value="bloqueado"
+                    {% if resultado == "bloqueado" %}selected{% endif %}
+                >
+                    Bloqueados
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="filter-date">
+
+            <label for="id_inicio">Data inicial</label>
+
+            <input
+                type="date"
+                id="id_inicio"
+                name="inicio"
+                value="{{ inicio }}"
+            >
+
+        </div>
+
+        <div class="filter-date">
+
+            <label for="id_fim">Data final</label>
+
+            <input
+                type="date"
+                id="id_fim"
+                name="fim"
+                value="{{ fim }}"
+            >
+
+        </div>
+
+        <div class="filter-actions">
+
+            <button type="submit" class="button">
+                Filtrar
+            </button>
+
+            <a
+                href="{% url 'historico_acessos' %}"
+                class="button button-secondary"
+            >
+                Limpar
+            </a>
+
+        </div>
+
+    </form>
+
+    <p class="muted">
+        Exibindo até 200 registros por consulta.
+    </p>
+
+    <!-- TABELA DE REGISTROS -->
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Data e hora</th>
+                    <th>Matrícula</th>
+                    <th>Aluno</th>
+                    <th>Resultado</th>
+                    <th>Motivo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for registro in registros %}
+
+                    <tr>
+
+                        <td>
+                            {{ registro.data_hora|date:"d/m/Y" }}
+                            {{ registro.data_hora|date:"H:i:s" }}
+                        </td>
+
+                        <td>
+                            {{ registro.matricula_informada }}
+                        </td>
+
+                        <td>
+                            {% if registro.aluno %}
+                                {{ registro.aluno.nome }}
+                            {% else %}
+                                Não identificado
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if registro.autorizado %}
+                                <span class="status status-ok">
+                                    Liberado
+                                </span>
+                            {% else %}
+                                <span class="status status-error">
+                                    Bloqueado
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ registro.motivo }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="5">
+                            Nenhum registro encontrado para esses filtros.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

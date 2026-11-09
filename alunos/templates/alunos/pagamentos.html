@@ -1,0 +1,190 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}Pagamentos | FitControl{% endblock %}
+
+{% block heading %}Planos e pagamentos{% endblock %}
+
+{% block content %}
+
+<!-- FORMULÁRIO DE REGISTRO DE PAGAMENTOS -->
+<div class="panel">
+
+    <h2>Registrar pagamento</h2>
+
+    <p class="muted">
+        Registre os pagamentos recebidos dos alunos.
+    </p>
+
+    <form method="post" class="payment-form">
+
+        {% csrf_token %}
+
+        <!-- ERROS GERAIS DO FORMULÁRIO -->
+        {% if form.non_field_errors %}
+            <div class="login-error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- CAMPOS DO FORMULÁRIO -->
+        {% for field in form %}
+
+            <div class="form-group">
+
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+
+                {{ field }}
+
+                {% if field.help_text %}
+                    <p class="muted">
+                        {{ field.help_text }}
+                    </p>
+                {% endif %}
+
+                {% for error in field.errors %}
+                    <p class="field-error">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+        {% endfor %}
+
+        <button type="submit" class="button">
+            Registrar pagamento
+        </button>
+
+    </form>
+
+</div>
+
+<!-- HISTÓRICO DE PAGAMENTOS -->
+<div class="panel">
+
+    <h2>Histórico de pagamentos</h2>
+
+    <!-- FORMULÁRIO DE FILTROS -->
+    <form method="get" class="filters-form">
+
+        <div class="filter-search">
+
+            <label for="id_matricula">
+                Matrícula do aluno
+            </label>
+
+            <input
+                type="text"
+                id="id_matricula"
+                name="matricula"
+                value="{{ matricula }}"
+                placeholder="Ex.: A001"
+            >
+
+        </div>
+
+        <div class="filter-date">
+
+            <label for="id_competencia">
+                Competência
+            </label>
+
+            <input
+                type="month"
+                id="id_competencia"
+                name="competencia"
+                value="{{ competencia }}"
+            >
+
+        </div>
+
+        <div class="filter-actions">
+
+            <button type="submit" class="button">
+                Filtrar
+            </button>
+
+            <a
+                href="{% url 'pagamentos' %}"
+                class="button button-secondary"
+            >
+                Limpar
+            </a>
+
+        </div>
+
+    </form>
+
+    <p class="muted">
+        Exibindo até 200 registros por consulta.
+    </p>
+
+    <!-- TABELA DE PAGAMENTOS -->
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Data do pagamento</th>
+                    <th>Aluno</th>
+                    <th>Matrícula</th>
+                    <th>Competência</th>
+                    <th>Valor</th>
+                    <th>Forma</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for pagamento in registros %}
+
+                    <tr>
+
+                        <td>
+                            {{ pagamento.data_pagamento|date:"d/m/Y" }}
+                        </td>
+
+                        <td>
+                            {{ pagamento.aluno.nome }}
+                        </td>
+
+                        <td>
+                            {{ pagamento.aluno.matricula }}
+                        </td>
+
+                        <td>
+                            {{ pagamento.competencia }}
+                        </td>
+
+                        <td>
+                            R$ {{ pagamento.valor|floatformat:2 }}
+                        </td>
+
+                        <td>
+                            {{ pagamento.get_forma_pagamento_display }}
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="6">
+                            Nenhum pagamento encontrado.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

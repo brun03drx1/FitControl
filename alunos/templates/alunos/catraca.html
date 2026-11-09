@@ -1,0 +1,131 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}Simulador de catraca | FitControl{% endblock %}
+
+{% block heading %}Controle de acesso{% endblock %}
+
+{% block content %}
+
+<!-- INDICADORES DO MÓDULO -->
+<div class="card-grid">
+
+    <section class="card">
+        <div class="card-label">Módulo</div>
+        <div class="card-value">Catraca</div>
+        <p class="muted">Simulação local</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Validação</div>
+        <div class="card-value">Matrícula</div>
+        <p class="muted">Consulta ao cadastro</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Auditoria</div>
+        <div class="card-value">Ativa</div>
+        <p class="muted">Registro das tentativas</p>
+    </section>
+
+</div>
+
+<!-- FORMULÁRIO DE SIMULAÇÃO DE ACESSO -->
+<div class="panel">
+
+    <h2>Simular entrada de aluno</h2>
+
+    <p class="muted">
+        Informe a matrícula para verificar se o acesso está autorizado.
+    </p>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <label for="matricula">
+            Número da matrícula
+        </label>
+
+        <input
+            type="text"
+            id="matricula"
+            name="matricula"
+            value="{{ matricula }}"
+            placeholder="Ex.: A001"
+            maxlength="20"
+            required
+            autofocus
+        >
+
+        <div class="actions" style="margin-top: 20px;">
+
+            <button class="button" type="submit">
+                Verificar acesso
+            </button>
+
+            <a
+                class="button button-secondary"
+                href="{% url 'painel_inicial' %}"
+            >
+                Voltar ao painel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- RESULTADO DA VERIFICAÇÃO -->
+{% if resultado != None %}
+
+    <div class="panel">
+
+        {% if resultado %}
+
+            <span class="status status-ok">
+                ACESSO LIBERADO
+            </span>
+
+            <h2 style="color: #34d399;">
+                Entrada autorizada
+            </h2>
+
+            <p>
+                A matrícula informada foi validada pelo sistema.
+            </p>
+
+        {% else %}
+
+            <span class="status status-error">
+                ACESSO BLOQUEADO
+            </span>
+
+            <h2 style="color: #f87171;">
+                Entrada não autorizada
+            </h2>
+
+            <p>
+                O sistema não autorizou a entrada.
+            </p>
+
+        {% endif %}
+
+        <p>
+            <strong>Matrícula:</strong> {{ matricula }}
+        </p>
+
+        <p>
+            <strong>Motivo:</strong> {{ motivo }}
+        </p>
+
+        <p class="muted">
+            A tentativa foi registrada no histórico de acessos quando
+            uma matrícula foi informada.
+        </p>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

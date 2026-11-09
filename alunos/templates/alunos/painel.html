@@ -1,0 +1,152 @@
+{% extends "alunos/base.html" %}
+
+{% block title %}Painel | FitControl{% endblock %}
+
+{% block heading %}Painel inicial{% endblock %}
+
+{% block content %}
+
+<!-- INDICADORES DO SISTEMA -->
+<div class="card-grid">
+
+    <section class="card">
+        <div class="card-label">Total de alunos</div>
+        <div class="card-value">{{ total_alunos }}</div>
+        <p class="muted">Todos os cadastros</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Alunos ativos</div>
+        <div class="card-value">{{ alunos_ativos }}</div>
+        <p class="muted">Cadastros habilitados</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Matrículas vencidas</div>
+        <div class="card-value">{{ matriculas_vencidas }}</div>
+        <p class="muted">Validade expirada</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Acessos de hoje</div>
+        <div class="card-value">{{ total_acessos_hoje }}</div>
+        <p class="muted">Total de tentativas registradas</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Entradas liberadas hoje</div>
+        <div class="card-value">{{ acessos_liberados_hoje }}</div>
+        <p class="muted">Acessos autorizados</p>
+    </section>
+
+    <section class="card">
+        <div class="card-label">Entradas bloqueadas hoje</div>
+        <div class="card-value">{{ acessos_bloqueados_hoje }}</div>
+        <p class="muted">Acessos não autorizados</p>
+    </section>
+
+</div>
+
+<!-- ATALHOS RÁPIDOS -->
+<div class="panel">
+
+    <h2>Atalhos rápidos</h2>
+
+    <div class="actions">
+
+        <a
+            class="button"
+            href="{% url 'cadastrar_aluno' %}"
+        >
+            + Cadastrar aluno
+        </a>
+
+        <a
+            class="button button-secondary"
+            href="{% url 'listar_alunos' %}"
+        >
+            Ver alunos
+        </a>
+
+        <a
+            class="button button-secondary"
+            href="{% url 'simular_catraca' %}"
+        >
+            Abrir catraca
+        </a>
+
+    </div>
+
+</div>
+
+<!-- HISTÓRICO RECENTE DE ACESSOS -->
+<div class="panel">
+
+    <h2>Últimas tentativas de acesso</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Data e hora</th>
+                <th>Matrícula</th>
+                <th>Aluno</th>
+                <th>Resultado</th>
+                <th>Motivo</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for acesso in ultimos_acessos %}
+                <tr>
+
+                    <td>
+                        {{ acesso.data_hora|date:"d/m/Y H:i:s" }}
+                    </td>
+
+                    <td>
+                        {{ acesso.matricula_informada }}
+                    </td>
+
+                    <td>
+                        {% if acesso.aluno %}
+                            {{ acesso.aluno.nome }}
+                        {% else %}
+                            Não identificado
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if acesso.autorizado %}
+                            <span class="status status-ok">
+                                Liberado
+                            </span>
+                        {% else %}
+                            <span class="status status-error">
+                                Bloqueado
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ acesso.motivo }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+                <tr>
+                    <td colspan="5">
+                        Nenhuma tentativa registrada.
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

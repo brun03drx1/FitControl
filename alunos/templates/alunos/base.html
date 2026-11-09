@@ -1,0 +1,135 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}FitControl{% endblock %}</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'alunos/css/estilo.css' %}"
+    >
+</head>
+
+<body>
+    <div class="layout">
+
+        <!-- MENU LATERAL -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                FIT<span>CONTROL</span>
+            </div>
+
+            <div class="sidebar-description">
+                Gestão inteligente de academia
+            </div>
+
+            <div class="menu-title">Principal</div>
+
+            <a
+                class="menu-link"
+                href="{% url 'painel_inicial' %}"
+            >
+                Painel inicial
+            </a>
+
+            <a
+                class="menu-link"
+                href="{% url 'listar_alunos' %}"
+            >
+                Gestão de alunos
+            </a>
+
+            <a
+                class="menu-link"
+                href="{% url 'cadastrar_aluno' %}"
+            >
+                Cadastrar aluno
+            </a>
+
+            <div class="menu-title">Controle de acesso</div>
+
+            <a
+                class="menu-link"
+                href="{% url 'simular_catraca' %}"
+            >
+                Simulador de catraca
+            </a>
+
+            <a
+                class="menu-link"
+                href="{% url 'historico_acessos' %}"
+            >
+                Histórico de acessos
+            </a>
+
+            <div class="menu-title">Administração</div>
+
+            <a
+                class="menu-link"
+                href="{% url 'pagamentos' %}"
+            >
+                Planos e pagamentos
+            </a>
+
+            <a
+                class="menu-link"
+                href="/admin/"
+            >
+                Painel Django
+            </a>
+
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+
+            <!-- CABEÇALHO -->
+            <header class="topbar">
+
+                <div>
+                    <h1>
+                        {% block heading %}Sistema de Academia{% endblock %}
+                    </h1>
+
+                    <p>Gestão de alunos e controle de acesso</p>
+                </div>
+
+                {% if request.user.is_authenticated %}
+                    <div class="actions">
+
+                        <span class="muted">
+                            {{ request.user.username }}
+                        </span>
+
+                        <form
+                            method="post"
+                            action="{% url 'logout' %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                class="button button-secondary"
+                                type="submit"
+                            >
+                                Sair
+                            </button>
+                        </form>
+
+                    </div>
+                {% endif %}
+
+            </header>
+
+            <!-- CONTEÚDO DAS PÁGINAS -->
+            {% block content %}{% endblock %}
+
+        </main>
+
+    </div>
+</body>
+</html>
